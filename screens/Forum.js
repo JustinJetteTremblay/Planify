@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, SafeAreaView, Image, TouchableOpacity, Button } from 'react-native';
 import FlastListEvent from "../components/FlatListEvent";
 import * as firebase from 'firebase';
+import { set } from 'react-native-reanimated';
 
 
 const forum = ({ navigation }) => {
@@ -24,15 +25,7 @@ const forum = ({ navigation }) => {
 
     return id;
   }
-  function editEvent(titre,description,user) {
-    const db = firebase.firestore();
-    return db.collection('Ajouts').doc('Un nouvel evenement').set({
-        Description:description,
-        nom: titre,
-        Date: new Date(),
-        user: user.uid
-    })
-}
+  
 
   useEffect(() => {
     setAjouts(null)
@@ -81,16 +74,12 @@ const forum = ({ navigation }) => {
         </TouchableOpacity> */}
 
         {/* Liste de tout les ajouts */}
-        <View style={{ flexDirection: 'column', flex: 1 }}>
-          <FlastListEvent data={ajouts} navigation={navigation} nomPage="Forum" />
-        </View>
+       
       </View>
       <Button title="Ajouter un event" onPress={() => navigation.navigate("AddEventScreen")}></Button>
-      <Button title="Edit un event" onPress={() => navigation.navigate("EditEventScreen")}></Button>
-      
-      <TouchableOpacity style={styles.boutonDelete} onPress={()=> deleteEventById("test")}>
-              <Text>🗑️</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'column', flex: 1 }}>
+          <FlastListEvent data={ajouts} navigation={navigation} nomPage="Forum" />
+      </View>
     </ScrollView>
   )
 }

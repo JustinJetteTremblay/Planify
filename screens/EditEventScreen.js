@@ -6,18 +6,18 @@ import * as firebase from 'firebase';
 import { AuthContext } from '../navigation/AuthProvider';
 
 
-function editEvent(titre,description,user) {
+function editEvent(id,titre,description,user) {
     const db = firebase.firestore();
-    return db.collection('Ajouts').doc('Un nouvel evenement').set({
+    return db.collection('Ajouts').doc(id).set({
         Description:description,
-        nom: titre,
+        Titre: titre,
         Date: new Date(),
         user: user.uid
 
     })
 }
 
-const EditEventScreen = ({navigation}) => {
+const EditEventScreen = ({ route,navigation}) => {
     /*
         1.Titre de l'évènement
         2.Date
@@ -30,6 +30,10 @@ const EditEventScreen = ({navigation}) => {
     const [titre, setTitre] = useState("")
     const [description, setDescription] = useState("")
     const { user, logout } = useContext(AuthContext);
+
+    const { id } = route.params
+
+    console.log(id)
 
     function erase(){
         setDescription("")
@@ -62,7 +66,7 @@ const EditEventScreen = ({navigation}) => {
                 placeholderTextColor={'#c7c7c7'}
                 underlineColorAndroid={'transparent'}
             />
-            <TouchableOpacity style={styles.bouton} onPress={() => {editEvent(titre,description, user);erase()}}>
+            <TouchableOpacity style={styles.bouton} onPress={() => {editEvent(id,titre,description, user)}}>
                 <Text>Edit</Text>
             </TouchableOpacity>
         </View>

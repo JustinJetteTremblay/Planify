@@ -9,11 +9,12 @@ import { AuthContext } from '../navigation/AuthProvider';
 function addEvent(titre,description, user) {
     const db = firebase.firestore();
     return db.collection('Ajouts').doc(titre).set({
-        nom: titre,
+        Titre: titre,
         Description:description,
         Date: new Date(),
         uId: user.uid
     })
+
 }
 
 const AddEventScreen = ({navigation}) => {
@@ -61,7 +62,7 @@ const AddEventScreen = ({navigation}) => {
                 placeholderTextColor={'#c7c7c7'}
                 underlineColorAndroid={'transparent'}
             />
-            <TouchableOpacity style={styles.bouton} onPress={() => {addEvent(titre,description, user);erase()}}>
+            <TouchableOpacity style={styles.bouton} onPress={() => {addEvent(titre,description, user); navigation.navigate('Forum')}}>
                 <Text>Ajouter</Text>
             </TouchableOpacity>
         </View>

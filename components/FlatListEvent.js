@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, ScrollView, TouchableNativeFeedback } from 'react-native';
 import * as firebase from 'firebase';
 
 import EventButton from './EventButton';
@@ -11,11 +11,22 @@ const deleteEventById = async (id) => {
 
     return id;
 }
+function editEvent(id,titre,description,user) {
+    const db = firebase.firestore();
+    return db.collection('Ajouts').doc(id).set({
+        Description:description,
+        nom: titre,
+        Date: new Date(),
+        user: user.uid
+    })
+}
 
 const Event = ({ item, navigation, nomPage }) => {
     /*--variables--*/
     let localisation = ""
     let description = ""
+
+    console.log("ALLO")
 
     if (item.localisation != null || item.localisation != undefined)
         localisation = item.localisation
@@ -23,14 +34,17 @@ const Event = ({ item, navigation, nomPage }) => {
         description = item.Description
 
     return (
-        <View >
-            <View>
+        <ScrollView style={styles.item}>
+            <View style={{ flexDirection: 'column', zIndex: 1 }}>
                 {/* titre */}
-                <View>
+                <View style={{ flexDirection: 'row', zIndex: 1 }}>
                     <Text style={styles.titre}>{item.nom}</Text>
                     {/* Bouton pour lenlever' */}
-                    <TouchableOpacity style={styles.boutonDelete} onPress={()=>deleteEventById(item.uId)}>
+                    <TouchableOpacity style={styles.boutonDelete} onPress={() => deleteEventById(item.nom)} >
                         <Text>🗑️</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boutonEdit}  onPress={() => navigation.navigate("EditEventScreen", {id: item.nom})}>
+                        <Text>✎</Text>
                     </TouchableOpacity>
                 </View>
                 {/* description */}
@@ -41,12 +55,13 @@ const Event = ({ item, navigation, nomPage }) => {
                 </View>
                 <EventButton navigation={navigation} item={item} nomPage={nomPage} />
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
 const FlatListEvent = ({ data, navigation, nomPage }) => {
     const D = data
+    console.log(data)
     if (D != null || D != undefined) {
         return (
             <View style={styles.container}>
@@ -81,10 +96,10 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1
+        zIndex: 1,
     },
     liste: {
-        flexDirection: "column"
+        flexDirection: "column",
     },
     titre: {
         fontSize: 35
@@ -96,6 +111,15 @@ const styles = StyleSheet.create({
     },
     boutonDelete: {
         backgroundColor: "red",
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        borderRadius: 15,
+        marginRight: 45,
+        color: 'white',
+        alignItems: 'center'
+    },
+    boutonEdit: {
+        backgroundColor: "yellow",
         paddingHorizontal: 20,
         paddingVertical: 5,
         borderRadius: 15,
