@@ -5,12 +5,12 @@ import Textarea from 'react-native-textarea';
 import * as firebase from 'firebase';
 import { AuthContext } from '../navigation/AuthProvider';
 
-
-function editEvent(id,titre,description,user) {
+function editEvent(id,titre,description,catégorie,user) {
     const db = firebase.firestore();
     return db.collection('Ajouts').doc(id).set({
         Description:description,
-        Titre: titre,
+        nom: titre,
+        Catégorie:catégorie,
         Date: new Date(),
         user: user.uid
 
@@ -29,15 +29,15 @@ const EditEventScreen = ({ route,navigation}) => {
     */
     const [titre, setTitre] = useState("")
     const [description, setDescription] = useState("")
+    const [catégorie,setCatégorie] = useState("")
     const { user, logout } = useContext(AuthContext);
 
     const { id } = route.params
 
-    console.log(id)
-
     function erase(){
         setDescription("")
         setTitre("")
+        setCatégorie("")
         navigation.navigate("Forum")
     }
     
@@ -54,6 +54,17 @@ const EditEventScreen = ({ route,navigation}) => {
                     placeholderTextColor="#666"
                 />
             </View>
+            {/* à remplacer par une dropdownlist de tout les catégorie */}
+            <View style={styles.action}>
+                <TextInput
+                    value={catégorie}
+                    onChangeText={(txt) => setCatégorie(txt)}
+                    style={styles.input}
+                    numberOfLines={1}
+                    placeholder={"Catégorie"}
+                    placeholderTextColor="#666"
+                />
+            </View>
 
             {/* Description */}
             <Textarea
@@ -66,8 +77,8 @@ const EditEventScreen = ({ route,navigation}) => {
                 placeholderTextColor={'#c7c7c7'}
                 underlineColorAndroid={'transparent'}
             />
-            <TouchableOpacity style={styles.bouton} onPress={() => {editEvent(id,titre,description, user)}}>
-                <Text>Edit</Text>
+            <TouchableOpacity style={styles.bouton} onPress={() => {editEvent(id,titre,description,catégorie, user);erase()}}>
+                <Text>Modifier</Text>
             </TouchableOpacity>
         </View>
     )

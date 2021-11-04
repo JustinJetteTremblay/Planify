@@ -41,7 +41,7 @@ const AppStack = () => {
              <Forum.Screen
                 name="EditEventScreen"
                 component={EditEventScreen}
-                options={headerManager("Edité un Planify")}
+                options={headerManager("Modifier un Event")}
             />
 
         </Forum.Navigator>

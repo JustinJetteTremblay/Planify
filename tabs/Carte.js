@@ -1,54 +1,81 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Button, TouchableOpacity } from 'react-native';
 import MapView, { Callout, Circle, Polygon, Polyline } from 'react-native-maps';
 import Header from '../components/Header';
 
 import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-
 const API_KEY = "AIzaSyCEY83Y-5Rehs-Ha-2Vklocapm72B1B43M"
-let initialRegion = {
-    longitude: -122.4324,
-    latitude: 37.78825,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421
-}
 
 const carte = ({ route, navigation }) => {
 
-    const [pin, setPin] = React.useState({
-        latitude: 37.78825,
-        longitude: -122.4324
-    })
+    let initialRegion = {
+        longitude: -73.8423519855052,
+        latitude: 45.642249982790126,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05
+    }
 
-    const [region, setRegion] = React.useState({
-        latitude: 37.78825,
-        longitude: -122.4324
-    })
+    let évènement = null
+    let latitudeEvent = initialRegion.latitude
+    let longitudeEvent = initialRegion.longitude
+    let nom = ""
+    let page = "HomeScreen"
 
-    let évènement = route.params
+    if (route.params != undefined) {
+        évènement = route.params
+        if (route.params.latitude != undefined || route.params.longitude != undefined) {
+            latitudeEvent = route.params.latitude
+            longitudeEvent = route.params.longitude
+        }
+        if (route.params.nom != undefined)
+            nom = route.params.nom
+        if (route.params.page != undefined)
+            page = route.params.page
+    }
 
+    const [pin, setPin] = useState({ latitude: initialRegion.latitude, longitude: initialRegion.longitude })
+    const [region, setRegion] = useState({ latitude: initialRegion.latitude, longitude: initialRegion.longitude })
+
+    //si le user a cliqué sur "Trouver sur la carte"
     if (évènement != undefined || évènement != null) {
-        let latitudeEvent = évènement.latitude
-        let longitudeEvent = évènement.longitude
-        let nom = évènement.nom
-        let page = évènement.page
 
         initialRegion.latitude = latitudeEvent
         initialRegion.longitude = longitudeEvent
-        const erase = () =>
-            évènement = null
-        latitudeEvent = null
-        longitudeEvent = null
-        nom = null
-        page = null
         return (
-            <View style={{marginTop: 50, flex: 1 }}>
+            <View style={{ marginTop: 50, flex: 1 }}>
+                <View style={{ flexDirection: 'column' }}>
+                    <Header title="carte" />
+                    <TouchableOpacity onPress={() => {
+                        évènement = null
+                        navigation.navigate(page);
+                    }}
+                        style={styles.boutonRetour}
+                    >
+                        <Text style={{ textAlign: 'center' }}>
+                            Retourner à {nom}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <MapView
+                    style={styles.mapStyle}
+                    initialRegion={initialRegion}
+                    showsUserLocation={true}
+                    provider="google">
+                    <MapView.Marker coordinate={{ latitude: latitudeEvent, longitude: longitudeEvent }} />
+                </MapView>
+            </View>
+        )
+
+    }
+    else if (évènement == undefined || évènement == null) {
+        return (
+            <View style={{ marginTop: 50, flex: 1 }}>
                 <GooglePlacesAutocomplete
                     placeholder='Search'
                     fetchDetails={true}
-                    GooglePlacesSearchQuery = {{
+                    GooglePlacesSearchQuery={{
                         rankby: "distance"
                     }}
                     onPress={(data, details = null) => {
@@ -56,7 +83,7 @@ const carte = ({ route, navigation }) => {
                         console.log(data, details);
                     }}
                     query={{
-                        key: "AIzaSyBkV0GM6VbShMxLLswTH51otjdO1azKWVg",
+                        key: API_KEY,
                         language: 'en',
                         components: "country:ca",
                         types: "establishment",
@@ -64,15 +91,14 @@ const carte = ({ route, navigation }) => {
                         location: `${region.latitude}, ${region.longitude}`
                     }}
                     styles={{
-                        container: {flex : 0, position: "absolute", width: "100%",zIndex: 1},
-                        listView: {backgroundColor: "white"}
+                        container: { flex: 0, position: "absolute", width: "100%", zIndex: 1 },
+                        listView: { backgroundColor: "white" }
                     }}
                 />
-                <Header title="carte" />
-                <Button title={'⬅️ Retour à ' + nom} à onPress={() => { navigation.navigate(page); erase() }} />
                 <MapView
                     style={styles.mapStyle}
                     initialRegion={initialRegion}
+                    showsUserLocation={true}
                     provider="google">
                     <MapView.Marker coordinate={{ latitude: 37.78825, longitude: -122.4324 }} draggable
                         onDragEnd={(e) => {
@@ -81,64 +107,11 @@ const carte = ({ route, navigation }) => {
                                 longitude: e.nativeEvent.coordinate.longitude
                             })
                         }}>
-                        <Callout>
-                            <Text>I'm here</Text>
-                        </Callout>
                     </MapView.Marker>
                 </MapView>
 
             </View>
         )
-    }
-    else if (évènement == undefined || évènement == null) {
-        return (
-            <View style={{ marginTop: 50, flex: 1 }}>
-                 <GooglePlacesAutocomplete
-                    fetchDetails={true}
-                    placeholder='Search'
-                    GooglePlacesDetailsQuery={{
-                        rankby: "distance"
-                    }}
-                    onPress={(data, details = null) => {
-                        // 'details' is provided when fetchDetails = true
-                        console.log(data, details);
-                    }}
-                    query={{
-                        key: "AIzaSyBkV0GM6VbShMxLLswTH51otjdO1azKWVg",
-                        language: 'en',
-                        components: "country:us",
-                        types: "establishment",
-                        radius: 30000,
-                        location: `${region.latitude}, ${region.longitude}`
-                    }}
-                    styles={{
-                        container: {flex : 0, position: "absolute", width: "100%",zIndex: 1},
-                        listView: {backgroundColor: "white"}
-                    }}
-                />
-                <Header title="carte" />
-                <MapView
-                    style={styles.mapStyle}
-                    initialRegion={initialRegion}
-                    provider="google">
-                    <MapView.Marker coordinate={{ latitude: 37.78825, longitude: -122.4324 }} draggable
-                        onDragEnd={(e) => {
-                            setPin({
-                                latitude: e.nativeEvent.coordinate.latitude,
-                                longitude: e.nativeEvent.coordinate.longitude
-                            })
-                        }}>
-                        <Callout>
-                            <Text>I'm here</Text>
-                        </Callout>
-                    </MapView.Marker>
-                    <Circle center={pin} radius={1000}>
-
-                    </Circle>
-                </MapView>
-            </View>
-        )
-
     }
 }
 
@@ -153,5 +126,13 @@ const styles = StyleSheet.create({
     mapStyle: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
+    },
+    boutonRetour: {
+        backgroundColor: "#00a46c",
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        borderRadius: 15,
+        color: 'white',
+        alignContent: 'center'
     }
 });

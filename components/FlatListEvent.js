@@ -1,67 +1,60 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Button, ScrollView, TouchableNativeFeedback } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Button, ActivityIndicator } from 'react-native';
 import * as firebase from 'firebase';
-
 import EventButton from './EventButton';
 
 const deleteEventById = async (id) => {
     await firebase.firestore().collection("Ajouts").doc(id).delete();
-
-    console.log(id)
-
     return id;
 }
-function editEvent(id,titre,description,user) {
-    const db = firebase.firestore();
-    return db.collection('Ajouts').doc(id).set({
-        Description:description,
-        nom: titre,
-        Date: new Date(),
-        user: user.uid
-    })
-}
 
-const Event = ({ item, navigation, nomPage }) => {
+const Event = ({ item, navigation, nomPage, id, userInfo }) => {
     /*--variables--*/
-    let localisation = ""
     let description = ""
 
-    console.log("ALLO")
-
-    if (item.localisation != null || item.localisation != undefined)
-        localisation = item.localisation
     if (item.Description != null || item.Description != undefined)
         description = item.Description
-
-    return (
-        <ScrollView style={styles.item}>
-            <View style={{ flexDirection: 'column', zIndex: 1 }}>
-                {/* titre */}
-                <View style={{ flexDirection: 'row', zIndex: 1 }}>
-                    <Text style={styles.titre}>{item.nom}</Text>
-                    {/* Bouton pour lenlever' */}
-                    <TouchableOpacity style={styles.boutonDelete} onPress={() => deleteEventById(item.nom)} >
-                        <Text>🗑️</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.boutonEdit}  onPress={() => navigation.navigate("EditEventScreen", {id: item.nom})}>
-                        <Text>✎</Text>
-                    </TouchableOpacity>
-                </View>
-                {/* description */}
-                <View style={{ flexDirection: 'row' }}>
-                    <Text>
-                        {description}
-                    </Text>
-                </View>
-                <EventButton navigation={navigation} item={item} nomPage={nomPage} />
+    else
+        description = ""
+        return (
+            <View style={styles.item}>
+                <View style={{ flexDirection: 'column' }}>
+                    {/* titre */}
+                    <View style={{flexDirection:'row', width:'100%', borderBottomColor:'#dcdcdc', borderBottomWidth:1,}}>
+                        <Text style={styles.titre}>{item.nom}</Text>
+                        <View style={{ flexDirection: 'row' }}>
+                {/* Bouton pour lenlever' */}
+                <TouchableOpacity style={styles.boutonCRUD} onPress={() => deleteEventById(item.nom)}>
+                    <Text>🗑️</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.boutonCRUD} onPress={() => navigation.navigate("EditEventScreen", { id: item.nom })}>
+                    <Text>✎</Text>
+                </TouchableOpacity>
             </View>
-        </ScrollView>
-    )
-}
+                        {/* Bouton pour lenlever' */}
+                        {/* <TouchableOpacity style={styles.boutonDelete} onPress={()=>console.log("delete",item.nom)}>
+                            <Text>🗑️</Text>
+                        </TouchableOpacity> */}
+                    </View>
+                    {/* description */}
+                    <View style={{ flexDirection: 'row',paddingLeft:10,paddingTop:10,paddingBottom:10,width:'100%' }}>
+                        <Text >
+                            {description}
+                        </Text>
+                    </View>
+                    <View style={{borderTopColor:'#dcdcdc',borderTopWidth:1}}>
+                        <EventButton navigation={navigation} item={item} nomPage={nomPage} />
+                    </View>
+                </View>
+            </View>
+        )
+    }
 
-const FlatListEvent = ({ data, navigation, nomPage }) => {
+const FlatListEvent = ({ data, navigation,userInfo, nomPage }) => {
     const D = data
-    console.log(data)
+    console.log("DAns la flatlist:",userInfo)
+    id = 1
+
     if (D != null || D != undefined) {
         return (
             <View style={styles.container}>
@@ -80,12 +73,8 @@ const FlatListEvent = ({ data, navigation, nomPage }) => {
             </View>
         )
     }
-    else if (data == null || data == undefined) {
-        return (
-            <View style={styles.container}>
-                <Text>AUCUNS ÉVÈNEMENTS TROUVÉS</Text>
-            </View>
-        )
+    else if ((D == null || D == undefined) && (userInfo == null || userInfo == undefined)) {
+        return (<ActivityIndicator animating={true} color="black" size="large" />)
     }
 }
 
@@ -95,36 +84,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1,
+        justifyContent: 'center'
     },
     liste: {
         flexDirection: "column",
+        backgroundColor: '#dcdcdc'
     },
     titre: {
-        fontSize: 35
+        fontSize:25,
+        paddingLeft:5
     },
     item: {
-        borderColor: 'black',
-        margin: '5%',
-        flexDirection: 'row',
+        borderColor:'black',
+        margin:0,
+        marginTop:15,
+        flexDirection:'row',
+        backgroundColor: 'white',
+        width:'100%'
     },
-    boutonDelete: {
-        backgroundColor: "red",
-        paddingHorizontal: 20,
-        paddingVertical: 5,
-        borderRadius: 15,
+    boutonCRUD: {
+        paddingHorizontal: 2,
+        paddingVertical: 10,
         marginRight: 45,
-        color: 'white',
-        alignItems: 'center'
-    },
-    boutonEdit: {
-        backgroundColor: "yellow",
-        paddingHorizontal: 20,
-        paddingVertical: 5,
-        borderRadius: 15,
-        marginRight: 45,
-        color: 'white',
-        alignItems: 'center'
     }
 })

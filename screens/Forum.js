@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, SafeAreaView, Image, TouchableOpacity, Button } from 'react-native';
 import FlastListEvent from "../components/FlatListEvent";
 import * as firebase from 'firebase';
-import { set } from 'react-native-reanimated';
-
 
 const forum = ({ navigation }) => {
   const [ajouts, setAjouts] = useState([])
@@ -18,14 +16,6 @@ const forum = ({ navigation }) => {
     })
     setAjouts(R)
   }
-  const deleteEventById = async (id) =>{
-    await firebase.firestore().collection("Ajouts").doc(id).delete();
-
-    console.log(id)
-
-    return id;
-  }
-  
 
   useEffect(() => {
     setAjouts(null)
@@ -34,25 +24,18 @@ const forum = ({ navigation }) => {
   }, []);
 
   return (
-    <ScrollView style={{ backgroundColor: "#5cdb95" }}>
+    <ScrollView style={{ backgroundColor: "#dcdcdc" }}>
       <View style={{
-        backgroundColor: "#5cdb95", height: "7%", borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20, paddingHorizontal: 20
+        backgroundColor: "dcdcdc", height: "10%", borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20, width:'100%',marginTop:20
       }}>
-        <Image
-          source={require('../assets/1.png')}
-          style={{
-            height: 10,
-            width: 20,
-            marginTop: 50
-          }}
-        />
-        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10, width: "100%" }}>
+       
+        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10, width: "100%",paddingHorizontal: 20, }}>
           {/* Texte d'accueil du forum */}
-          <View style={{ width: "50%", backgroundColor: "#5cdb95" }}>
+          <View style={{ width: "50%", backgroundColor: "#dcdcdc" }}>
             <Text style={{
               fontSize: 28,
-              color: "#edf5e1",
+              color: "#141823",
               fontWeight: "bold"
             }}>
               Bienvenue sur le forum de Planify
@@ -66,6 +49,7 @@ const forum = ({ navigation }) => {
             />
           </View>
         </View>
+        
 
         {/* Bouton pour ajouter un évènement */}
         {/* <TouchableOpacity style={styles.bouton}
@@ -74,9 +58,13 @@ const forum = ({ navigation }) => {
         </TouchableOpacity> */}
 
         {/* Liste de tout les ajouts */}
-       
       </View>
-      <Button title="Ajouter un event" onPress={() => navigation.navigate("AddEventScreen")}></Button>
+      <TouchableOpacity style={styles.bouton} onPress={() => navigation.navigate("AddEventScreen")}>
+            <Text>Ajouter un event</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.bouton} onPress={() => getAjouts()}>
+            <Text>Rafraichir</Text>
+          </TouchableOpacity>
       <View style={{ flexDirection: 'column', flex: 1 }}>
           <FlastListEvent data={ajouts} navigation={navigation} nomPage="Forum" />
       </View>
@@ -98,5 +86,11 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 15,
     color: 'white'
+  },
+  boutonAdd: {
+    backgroundColor: "white",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    color: 'white',
   }
 });
