@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Button, TouchableOpacity } from 'react-native';
-import MapView, { Callout, Circle, Polygon, Polyline } from 'react-native-maps';
+import MapView, { Callout, Circle, Polygon, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import Header from '../components/Header';
 
 import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-const API_KEY = "AIzaSyCEY83Y-5Rehs-Ha-2Vklocapm72B1B43M"
+const API_KEY = "AIzaSyA4BtUvJDZEH-CFXNFbjNO-bI5He2Zlm3U"
 
 const carte = ({ route, navigation }) => {
 
@@ -35,8 +35,8 @@ const carte = ({ route, navigation }) => {
             page = route.params.page
     }
 
-    const [pin, setPin] = useState({ latitude: initialRegion.latitude, longitude: initialRegion.longitude })
-    const [region, setRegion] = useState({ latitude: initialRegion.latitude, longitude: initialRegion.longitude })
+    const [pin, setPin] = useState({ latitude: 45.642249982790126, longitude: -73.8423519855052 })
+    const [region, setRegion] = useState({ latitude: 45.642249982790126, longitude: -73.8423519855052 })
 
     //si le user a cliqué sur "Trouver sur la carte"
     if (évènement != undefined || évènement != null) {
@@ -58,16 +58,43 @@ const carte = ({ route, navigation }) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
+                <GooglePlacesAutocomplete
+                    placeholder='Search'
+                    fetchDetails={true}
+                    onPress={(data, details = null) => {
+                        // 'details' is provided when fetchDetails = true
+                        console.log(data, details);
+                        setRegion({
+                            latitude: details.geometry.location.lat,
+                            longitude: details.geometry.location.lng,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421
+                        })
+                    }}
+                    query={{
+                        key: 'AIzaSyA4BtUvJDZEH-CFXNFbjNO-bI5He2Zlm3U',
+                        language: 'en',
+                        types: 'establishment',
+                        radius: 30000,
+                        location: `${region.latitude}, ${region.longitude}`                
+                    }}
+                    styles={{
+                        container: { flex: 0, position: "absolute", width: "100%", zIndex: 1 },
+                        listView: { backgroundColor: "white" }
+                    }}
+                />
                 <MapView
                     style={styles.mapStyle}
                     initialRegion={initialRegion}
                     showsUserLocation={true}
-                    provider="google">
+                    provider='google'>
+
+                    <MapView.Marker coordinate={{latitude: region.latitude, longitude: region.longitude}}/>
                     <MapView.Marker coordinate={{ latitude: latitudeEvent, longitude: longitudeEvent }} />
                 </MapView>
+
             </View>
         )
-
     }
     else if (évènement == undefined || évènement == null) {
         return (
@@ -75,18 +102,20 @@ const carte = ({ route, navigation }) => {
                 <GooglePlacesAutocomplete
                     placeholder='Search'
                     fetchDetails={true}
-                    GooglePlacesSearchQuery={{
-                        rankby: "distance"
-                    }}
                     onPress={(data, details = null) => {
                         // 'details' is provided when fetchDetails = true
                         console.log(data, details);
+                        setRegion({
+                            latitude: details.geometry.location.lat,
+                            longitude: details.geometry.location.lng,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421
+                        })
                     }}
                     query={{
-                        key: API_KEY,
+                        key: 'AIzaSyA4BtUvJDZEH-CFXNFbjNO-bI5He2Zlm3U',
                         language: 'en',
-                        components: "country:ca",
-                        types: "establishment",
+                        types: 'establishment',
                         radius: 30000,
                         location: `${region.latitude}, ${region.longitude}`
                     }}
@@ -99,7 +128,8 @@ const carte = ({ route, navigation }) => {
                     style={styles.mapStyle}
                     initialRegion={initialRegion}
                     showsUserLocation={true}
-                    provider="google">
+                    provider='google'>
+                    <MapView.Marker coordinate={{latitude: region.latitude, longitude: region.longitude}}/>
                     <MapView.Marker coordinate={{ latitude: 37.78825, longitude: -122.4324 }} draggable
                         onDragEnd={(e) => {
                             setPin({
