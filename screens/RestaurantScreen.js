@@ -6,7 +6,7 @@ import EventButton from '../components/EventButton';
 import FlatListEvent from '../components/FlatListEvent';
 import PlanifyIndicator from "../components/PlanifyIndicator"
 
-const RestaurantScreen = ({ navigation }) => {
+const RestaurantScreen = ({ route, navigation }) => {
   const [restaurants, setRestaurants] = useState([])
 
   /*--aller chercher tout les festivals--*/
@@ -30,11 +30,25 @@ const RestaurantScreen = ({ navigation }) => {
   if (restaurants != null || restaurants != undefined) {
     return (
       <View style={styles.container}>
-        <FlatListEvent data={restaurants} nomPage={"RestaurantScreen"} navigation={navigation}/>
+        <FlatListEvent data={restaurants} nomPage={"RestaurantScreen"} navigation={navigation} />
       </View>)
   }
+  else if (route.params != null) {
+    //console.log("resto:",route.params.event)
+    const resto = route.params.event
+    return (
+      <View style={styles.container}>
+        {/*
+          <FlatListEvent data={} nomPage={"RestaurantScreen"} navigation={navigation}/> 
+
+        */}
+        <Text>test</Text>
+        {/* <Text>rating:{resto.results}</Text> */}
+      </View>
+    )
+  }
   else if (restaurants == null || restaurants == undefined) {
-    return(<PlanifyIndicator/>
+    return (<PlanifyIndicator />
     )
   }
 }
