@@ -5,10 +5,12 @@ import GetData from '../utils/GetData';
 import * as firebase from 'firebase';
 import FlatListEvent from '../components/FlatListEvent';
 import PlanifyIndicator from "../components/PlanifyIndicator";
+import FlatListGoogleEvents from '../components/FlatListGoogleEvents';
 
 const PartyScreen = ({ navigation,route }) => {
     //Création de la base de données
     const [partys, setPartys] = useState([])
+    const barsAndCasino = route.params.barAndCasino
 
     const getPartys = async () => {
         const db = firebase.firestore();
@@ -20,7 +22,6 @@ const PartyScreen = ({ navigation,route }) => {
         })
         setPartys(P)
     }
-
     useEffect(() => {
         setPartys(null)
         //setIsFetching(true)
@@ -32,7 +33,7 @@ const PartyScreen = ({ navigation,route }) => {
     if (partys != undefined || partys != null) {
         return (
             <View style={styles.container}>
-                <FlatListEvent navigation={navigation} nomPage={"PartyScreen"} data={partys} />
+                <FlatListGoogleEvents data={barsAndCasino.results} navigation={navigation} />
             </View>
         )
     }
@@ -44,8 +45,6 @@ const PartyScreen = ({ navigation,route }) => {
         )
     }
 }
-
-
 export default PartyScreen;
 
 const styles = StyleSheet.create({

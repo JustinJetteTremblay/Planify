@@ -40,9 +40,6 @@ const EventGoogle = ({ item, navigation, nomPage }) => {
                     />
                 </View>
                 <View style={{ flexDirection: 'row', paddingLeft: 10, paddingTop: 10, paddingBottom: 10, width: '100%' }}>
-                    <Text style={{ fontSize: 20 }}>Type :{type}</Text>
-                </View>
-                <View style={{ flexDirection: 'row', paddingLeft: 10, paddingTop: 10, paddingBottom: 10, width: '100%' }}>
                     <EventButton navigation={navigation} item={item} nomPage={nomPage} />
                 </View>
                 <View style={{ flexDirection: 'row' }}>

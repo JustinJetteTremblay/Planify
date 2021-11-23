@@ -25,6 +25,7 @@ const carte = ({ route, navigation }) => {
     let page = "HomeScreen"
 
     let nearestRestaurant = FetchNearestRestaurantFromGoogle(initialRegion);
+    let nearestBar = FetchNearestBarsFromGoogle(initialRegion);
 
     if (route.params != undefined) {
         évènement = route.params
@@ -218,6 +219,28 @@ const FetchNearestRestaurantFromGoogle = (location) => {
 
     return data;
 }
+const FetchNearestBarsFromGoogle = (location) => {
+
+    const [data, setData] = useState(null);
+
+    const latitude = location.latitude; // you can update it with user's latitude & Longitude
+    const longitude = location.longitude;
+    let radMetter = 2 * 1000; // Search withing 2 KM radius
+
+    const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + radMetter + '&type=bar' + '&key=' + 'AIzaSyA4BtUvJDZEH-CFXNFbjNO-bI5He2Zlm3U'
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            setData(data)
+        }
+        fetchData()
+    }, [])
+
+    return data;
+}
+
 
 export default carte;
 

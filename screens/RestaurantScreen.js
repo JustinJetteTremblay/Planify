@@ -11,7 +11,16 @@ import FlatListGoogleEvents from '../components/FlatListGoogleEvents';
 const RestaurantScreen = ({ route, navigation }) => {
   const [restaurants, setRestaurants] = useState([])
 
-  const resto = route.params.event
+  //   let initialRegion = {
+  //     longitude: -73.8423519855052,
+  //     latitude: 45.642249982790126,
+  //     latitudeDelta: 0.05,
+  //     longitudeDelta: 0.05
+  // }
+
+  const resto = route.params.resto
+
+  //const resto = FetchNearestRestaurantFromGoogle(initialRegion)
 
   /*--aller chercher tout les festivals--*/
   const getRestaurants = async () => {
@@ -42,12 +51,12 @@ const RestaurantScreen = ({ route, navigation }) => {
     //const resto = route.params.event
     return (
       <View style={styles.container}>
-        <Text>Rating: {resto.results[0].rating}</Text>
+        <ActivityIndicator animating={true} color="black" size="large" />
       </View>
     )
   }
   else if (restaurants == null || restaurants == undefined) {
-    return (<PlanifyIndicator />
+    return (<ActivityIndicator animating={true} color="black" size="large" />
     )
   }
 }

@@ -7,6 +7,7 @@ import { AuthContext } from '../navigation/AuthProvider';
 
 const FlatListGoogleEvents = ({ data, navigation }) => {
     const D = data
+    console.log(data)
 
     if (D != null || D != undefined) {
         return (

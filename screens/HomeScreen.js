@@ -8,7 +8,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 const HomeScreen = ({ navigation }) => {
 
     function divGenerator(screenName, nom, navigation, img) {
+        let initialRegion = {
+            longitude: -73.8423519855052,
+            latitude: 45.642249982790126,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05
+        }
         img = img.toString()
+
+        const resto = FetchNearestRestaurantFromGoogle(initialRegion);
+        const barAndCasino = FetchNearestBarsFromGoogle(initialRegion);
+
         return (
             <View>
                 <View style={{ flexDirection: "row", paddingHorizontal: 20, width: "100%", alignItems: "center" }}>
@@ -31,7 +41,12 @@ const HomeScreen = ({ navigation }) => {
                         style={{ position: "absolute", left: 0, right: 0, height: 100, marginTop: 220, top: 0 }} />
                     <TouchableOpacity
                         onPress={() => {
-                            navigation.navigate(screenName);
+                            if (screenName == "RestaurantScreen"){
+                                navigation.navigate(screenName,{resto: resto});
+                            }
+                            else if (screenName == "PartyScreen"){
+                                navigation.navigate(screenName,{barAndCasino: barAndCasino});
+                            }
                         }}
                         style={{
                             height: 240,
@@ -123,6 +138,48 @@ const HomeScreen = ({ navigation }) => {
 
 export default HomeScreen;
 
+const FetchNearestRestaurantFromGoogle = (location) => {
+
+    const [data, setData] = useState(null);
+  
+    const latitude = location.latitude; // you can update it with user's latitude & Longitude
+    const longitude = location.longitude;
+    let radMetter = 2 * 1000; // Search withing 2 KM radius
+  
+    const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + radMetter + '&type=restaurant' + '&key=' + 'AIzaSyA4BtUvJDZEH-CFXNFbjNO-bI5He2Zlm3U'
+  
+    useEffect(() => {
+        const fetchData = async () => {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            setData(data)
+        }
+        fetchData()
+    }, [])
+  
+    return data;
+  }
+  const FetchNearestBarsFromGoogle = (location) => {
+
+    const [data, setData] = useState(null);
+
+    const latitude = location.latitude; // you can update it with user's latitude & Longitude
+    const longitude = location.longitude;
+    let radMetter = 2 * 3000; // Search withing 2 KM radius
+
+    const url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=' + latitude + ',' + longitude + '&radius=' + radMetter + '&type=bar&type=casino' + '&key=' + 'AIzaSyA4BtUvJDZEH-CFXNFbjNO-bI5He2Zlm3U'
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            setData(data)
+        }
+        fetchData()
+    }, [])
+
+    return data;
+}
 const styles = StyleSheet.create({
     container: {
         flex: 1,
