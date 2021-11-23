@@ -47,6 +47,9 @@ const HomeScreen = ({ navigation }) => {
                             else if (screenName == "PartyScreen"){
                                 navigation.navigate(screenName,{barAndCasino: barAndCasino});
                             }
+                            else{
+                                navigation.navigate(screenName)
+                            }
                         }}
                         style={{
                             height: 240,
